@@ -18,7 +18,7 @@ FG_TEXT = "#FFFFFF"        # Texto principal
 FG_ALT = "#8FD8E6"         # Ciano Claro (texto secundário)
 BTN_BG = "#1A3F70"         # Botão
 BTN_ACTIVE = "#1F4E8C"     # Azul Médio (botão ativo / seleção)
-WARN_COLOR = "#E5484D"     # Vermelho Alerta
+WARN_COLOR = "#FF8A8E"     # Vermelho Alerta (versão para fundo escuro, contraste AA)
 OK_COLOR = "#2BB673"       # Verde Confere
 OK_BG = "#0F3D2E"          # Fundo do botão de ação principal
 

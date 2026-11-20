@@ -46,13 +46,16 @@ Os textos dos logos estão convertidos em curvas: aparecem iguais em qualquer co
 | Azul Institucional | `#0B2545` | Fundo principal, texto do logo em fundo claro |
 | Azul Profundo | `#13315C` | Painéis e cartões |
 | Azul Médio | `#1F4E8C` | Botões, seleção, aros do símbolo |
-| Ciano Busca | `#22B8CF` | Destaque, sigla do logo, interseção, links |
+| Ciano Busca | `#22B8CF` | Destaque, sigla do logo, interseção; texto só em fundo escuro |
+| Ciano Texto | `#0B7285` | Links e destaques em texto sobre fundo claro |
 | Ciano Claro | `#8FD8E6` | Texto secundário em fundo escuro |
-| Verde Confere | `#2BB673` | Resultado encontrado, sucesso, exportar |
-| Âmbar Atenção | `#F2A541` | Avisos |
-| Vermelho Alerta | `#E5484D` | Erros, remover |
+| Verde Confere | `#2BB673` (escuro) · `#1E7F4F` (claro) | Resultado encontrado, sucesso, exportar |
+| Âmbar Atenção | `#F2A541` (escuro) · `#9A5B00` (claro) | Avisos |
+| Vermelho Alerta | `#FF8A8E` (escuro) · `#B4232A` (claro) | Erros, remover |
 | Névoa | `#F4F7FB` | Fundo claro |
 | Grafite | `#4A5668` | Texto secundário em fundo claro |
+
+Contraste: todo texto atinge 4,5:1 no fundo indicado. O ciano `#22B8CF` sobre fundo claro fica em 2,2:1, então em fundo claro ele só aparece no logo e em formas, nunca em texto corrido.
 
 ## 5. Tipografia
 | Uso | Fonte |
