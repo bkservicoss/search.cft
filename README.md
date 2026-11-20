@@ -127,12 +127,12 @@ O app trata **dados pessoais** (nome, CPF, telefone, e-mail) de profissionais re
 | Nenhuma planilha, exportação ou log vai para o Git | ✅ `.gitignore` bloqueia `.xlsx`, `.xls`, `.csv`, `.ods`, `exports/`, `logs/` |
 | Nenhuma senha ou usuário padrão no repositório | ✅ `etc/users.json` removido do Git; senhas antigas citadas na documentação foram retiradas |
 | Segredos (Mongo, chaves) em GitHub Secrets ou variável de ambiente | ✅ Regra adotada; `config.ini` não deve receber senha |
-| Repositório privado | ✅ Privado desde 20/11/2026 |
+| Repositório privado | ⚠️ O repositório ainda está **público** |
 | Senhas com hash forte (bcrypt/argon2) | ⚠️ Pendente, se o login for ligado |
 | Processamento só local (nada sai da máquina) | ✅ No desktop; na versão web, depende de onde for hospedada |
 
 ## 8. Pendências
-- [x] Tornar o repositório privado
+- [ ] Tornar o repositório privado (Settings → General → Danger Zone → Change visibility)
 - [ ] Conferir o histórico do Git, que ainda guarda o antigo `etc/users.json` (senha padrão fraca, sem dado real)
 - [ ] Rodar o workflow **Build Windows (.exe)** pela primeira vez e testar o `.exe` no CRT-ES
 - [x] Corrigir os 5 bugs do app desktop
