@@ -4,6 +4,8 @@
 
 **Marca de produto do Search.CRT, ferramenta de comparativo e busca de dados criada para o CRT-ES e preparada para o Sistema CFT/CRTs.**
 
+Versão navegável (cores, tipografia, espaçamentos e logos): [Design System Search.CFT](https://claude.ai/artifact/T8mZ6CQnfVA4CYEE8QyspZ) (acesso restrito ao dono).
+
 ## Sumário
 1. [Conceito](#1-conceito)
 2. [Família de nomes](#2-família-de-nomes)
