@@ -57,7 +57,7 @@ Panorama em 20/11/2026.
 | Área | Situação | Observação |
 |---|---|---|
 | Motor de comparação e busca | 🟢 Pronto | Regras de CPF, telefone, e-mail e nome funcionando nas duas versões |
-| App desktop | 🟢 Funcional | Identidade aplicada; build agora pelo GitHub Actions |
+| App desktop | 🟢 Funcional | Identidade aplicada; 5 bugs corrigidos; build agora pelo GitHub Actions |
 | App web | 🟢 Funcional | Identidade aplicada; roda no Codespaces |
 | Identidade visual | 🟢 Pronto | Logos, ícone, paleta e manual em `assets/identidade/` |
 | Build do .exe | 🟡 Novo | Workflow criado; precisa da 1ª execução para confirmar |
@@ -67,14 +67,16 @@ Panorama em 20/11/2026.
 | Testes | 🔴 Parcial | 6 de 9 passam; os 3 de login falham (usuário de teste não é apagado entre testes). O motor de busca não tem teste |
 | Multi-regional (CFT/CRTs) | ⚪ Não iniciado | Hoje é 1 instalação por máquina, sem separação por regional |
 
-**Bugs conhecidos no app desktop** (o web não tem os dois primeiros):
-| Bug | Efeito |
+**Bugs corrigidos no app desktop (20/11/2026)**
+| Bug | Correção |
 |---|---|
-| Arquivo `.csv` aceito na seleção, mas ignorado no Comparativo | A fonte entra na contagem e não gera resultado, sem aviso |
-| Erro na Busca Localizada usa variável já apagada (`lambda: ... e`) | Em caso de erro, a mensagem não aparece |
-| CPF em célula numérica do Excel perde o zero à esquerda | CPFs que começam com 0 não são encontrados |
-| Em `.txt`, a linha inteira vira "nome" | Comparar por Nome em TXT quase nunca casa |
-| "Remover" tira só o primeiro item selecionado | Pequeno, de usabilidade |
+| `.csv` aceito na seleção, mas ignorado no Comparativo | CSV lido de verdade (separador detectado sozinho); formato desconhecido agora gera aviso |
+| Erro na Busca Localizada não mostrava mensagem | Mensagem guardada antes de sair do `except` |
+| CPF em célula numérica do Excel perdia o zero à esquerda | Planilhas lidas como texto e CPF recomposto com 11 dígitos nas colunas "CPF" |
+| Em `.txt`, a linha inteira virava "nome" | Nome extraído do trecho com 2+ palavras sem números |
+| "Remover" tirava só o primeiro selecionado | Lista aceita seleção múltipla e remove todos |
+
+Busca Localizada também passou a aceitar `.csv` e `.ods`. Na versão web, o CPF com zero à esquerda e o nome em `.txt` ainda seguem o comportamento antigo.
 
 ## 4. Como usar (sem instalar nada)
 | O quê | Caminho |
@@ -97,6 +99,7 @@ Detalhes em [INSTALL.md](INSTALL.md).
 ## 6. Estrutura do repositório
 ```
 search.cft/
+├── CLAUDE.md                  # Instruções do projeto para o Claude
 ├── searchcrt.py               # App desktop (Tkinter)
 ├── searchcrt_streamlit.py     # App web (Streamlit)
 ├── searchcrt.spec             # Build do .exe (PyInstaller)
@@ -124,15 +127,16 @@ O app trata **dados pessoais** (nome, CPF, telefone, e-mail) de profissionais re
 | Nenhuma planilha, exportação ou log vai para o Git | ✅ `.gitignore` bloqueia `.xlsx`, `.xls`, `.csv`, `.ods`, `exports/`, `logs/` |
 | Nenhuma senha ou usuário padrão no repositório | ✅ `etc/users.json` removido do Git; senhas antigas citadas na documentação foram retiradas |
 | Segredos (Mongo, chaves) em GitHub Secrets ou variável de ambiente | ✅ Regra adotada; `config.ini` não deve receber senha |
-| Repositório privado | ⚠️ O repositório está **público** hoje |
+| Repositório privado | ✅ Privado desde 20/11/2026 |
 | Senhas com hash forte (bcrypt/argon2) | ⚠️ Pendente, se o login for ligado |
 | Processamento só local (nada sai da máquina) | ✅ No desktop; na versão web, depende de onde for hospedada |
 
 ## 8. Pendências
-- [ ] Tornar o repositório privado (e conferir o histórico do Git, que ainda guarda o antigo `etc/users.json`)
+- [x] Tornar o repositório privado
+- [ ] Conferir o histórico do Git, que ainda guarda o antigo `etc/users.json` (senha padrão fraca, sem dado real)
 - [ ] Rodar o workflow **Build Windows (.exe)** pela primeira vez e testar o `.exe` no CRT-ES
-- [ ] Corrigir os 5 bugs do app desktop listados em [Estado do projeto](#3-estado-do-projeto)
-- [ ] Ler CPF/telefone como texto (`dtype=str`) nas planilhas
+- [x] Corrigir os 5 bugs do app desktop
+- [ ] Levar as mesmas correções (CPF como texto, nome em TXT) para a versão web
 - [ ] Corrigir os testes de login e criar testes do motor (CPF, telefone, e-mail, comparativo)
 - [ ] Juntar o motor num módulo único (`motor.py`) usado pelas duas versões, em vez de código duplicado
 - [ ] Decidir se login, banco e `config.ini` entram no produto ou saem do repositório
