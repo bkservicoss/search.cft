@@ -1,4 +1,4 @@
-<p align="center"><img src="assets/identidade/logo-search-cft.svg" alt="Search.CFT" width="420"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="assets/identidade/logo-search-cft-negativo.svg"><img src="assets/identidade/logo-search-cft.svg" alt="Search.CFT" width="420"></picture></p>
 
 <p align="center"><b>Comparativo de fontes e busca localizada de dados cadastrais, criado para o CRT-ES e preparado para o Sistema CFT/CRTs.</b></p>
 <p align="center">Python · Tkinter (desktop Windows) · Streamlit (web) · pandas</p>
@@ -45,7 +45,7 @@
 | **Search.CRT · ES** | Edição do piloto no CRT-ES |
 
 <p>
-  <img src="assets/identidade/logo-search-crt.svg" alt="Search.CRT" height="48">&nbsp;&nbsp;
+  <picture><source media="(prefers-color-scheme: dark)" srcset="assets/identidade/logo-search-crt-negativo.svg"><img src="assets/identidade/logo-search-crt.svg" alt="Search.CRT" height="48"></picture>&nbsp;&nbsp;
   <img src="assets/identidade/icone-app.svg" alt="ícone" height="48">
 </p>
 

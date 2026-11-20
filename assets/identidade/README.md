@@ -1,4 +1,4 @@
-<p align="center"><img src="logo-search-cft.svg" alt="Search.CFT" width="360"></p>
+<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="logo-search-cft-negativo.svg"><img src="logo-search-cft.svg" alt="Search.CFT" width="360"></picture></p>
 
 # Identidade visual · família Search.CFT
 
