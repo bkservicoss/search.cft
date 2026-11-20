@@ -11,7 +11,17 @@ from io import BytesIO
 import json
 
 # Configuração inicial da página
-st.set_page_config(page_title="SearchCRT - Busca e Comparativo de Dados", layout="wide")
+# Identidade visual Search.CRT (ver assets/identidade/README.md)
+PASTA_IDENTIDADE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "identidade")
+ICONE_APP = os.path.join(PASTA_IDENTIDADE, "icone-64.png")
+AZUL_INST, AZUL_PROF, AZUL_MEDIO = "#0B2545", "#13315C", "#1F4E8C"
+CIANO, CIANO_CLARO, VERDE = "#22B8CF", "#8FD8E6", "#2BB673"
+
+st.set_page_config(
+    page_title="Search.CRT - Busca e Comparativo de Dados",
+    page_icon=ICONE_APP if os.path.exists(ICONE_APP) else "🔍",
+    layout="wide",
+)
 
 # Tema seletor
 col_vazia, col_seletor = st.columns([5.2, 1.8])
@@ -28,19 +38,19 @@ with col_seletor:
 if tema_selecionado == "Modo Claro":
     bg_principal = "#FFFFFF"
     texto_principal = "#333333"
-    bg_sidebar = "#F4F6F9"
-    texto_sidebar = "#1B365D"
-    borda_sidebar = "#E0E0E0"
-    card_bg = "#F8F9FA"
-    titulo_cor = "#1B365D"
+    bg_sidebar = "#F4F7FB"
+    texto_sidebar = AZUL_INST
+    borda_sidebar = "#E3E8EF"
+    card_bg = "#F4F7FB"
+    titulo_cor = AZUL_INST
 else:
-    bg_principal = "#0E1117"
-    texto_principal = "#E0E0E0"
-    bg_sidebar = "#1E222B"
-    texto_sidebar = "#E0E0E0"
-    borda_sidebar = "#2D3139"
-    card_bg = "#1A1C23"
-    titulo_cor = "#4A90E2"
+    bg_principal = AZUL_INST
+    texto_principal = "#E3E8EF"
+    bg_sidebar = "#0F2D52"
+    texto_sidebar = "#E3E8EF"
+    borda_sidebar = AZUL_PROF
+    card_bg = AZUL_PROF
+    titulo_cor = CIANO
 
 # CSS customizado
 st.markdown(f"""
@@ -52,7 +62,7 @@ st.markdown(f"""
     .main .block-container {{
         padding-top: 0.5rem;
         padding-bottom: 3rem;
-        font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+        font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
     }}
     .main p, .main span, .main label, .main [data-testid="stMarkdownContainer"] p {{
         color: {texto_principal} !important;
@@ -73,9 +83,9 @@ st.markdown(f"""
         color: {texto_sidebar} !important;
     }}
     div.stButton > button {{
-        background-color: #1B365D !important;
-        border: 1px solid #1B365D !important;
-        border-radius: 4px !important;
+        background-color: {AZUL_MEDIO} !important;
+        border: 1px solid {AZUL_MEDIO} !important;
+        border-radius: 8px !important;
         padding: 0.6rem 2rem !important;
         font-weight: 700 !important;
         text-transform: uppercase;
@@ -84,21 +94,24 @@ st.markdown(f"""
         color: #FFFFFF !important;
     }}
     div.stButton > button:hover {{
-        background-color: #F2A900 !important;
-        border: 1px solid #F2A900 !important;
-        color: #1B365D !important;
+        background-color: {CIANO} !important;
+        border: 1px solid {CIANO} !important;
+        color: {AZUL_INST} !important;
     }}
     </style>
 """, unsafe_allow_html=True)
 
-# Banner de Cabeçalho
-st.markdown("""
-    <div style="background-color: #1B365D; padding: 25px; border-bottom: 6px solid #F2A900; border-radius: 4px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-        <h1 style="color: #FFFFFF !important; margin: 0; font-family: Arial, sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 0.5px; line-height: 1.2;">
-            🔍 SearchCRT - Sistema de Busca e Comparativo de Dados
-        </h1>
-        <p style="color: #F2A900; margin: 6px 0 0 0; font-family: Arial, sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
-            Análise Avançada • Comparativo Inteligente • Busca Localizada
+# Banner de Cabeçalho (identidade Search.CRT)
+LOGO_BANNER = os.path.join(PASTA_IDENTIDADE, "logo-search-crt-negativo.svg")
+logo_html = ""
+if os.path.exists(LOGO_BANNER):
+    with open(LOGO_BANNER, encoding="utf-8") as f_logo:
+        logo_html = f_logo.read().replace("<svg ", '<svg style="height:56px;width:auto;display:block" ', 1)
+st.markdown(f"""
+    <div style="background-color: {AZUL_INST}; padding: 22px 26px; border-bottom: 5px solid {CIANO}; border-radius: 10px; margin-bottom: 30px;">
+        {logo_html or '<h1 style="color:#FFFFFF !important;margin:0;">Search.CRT</h1>'}
+        <p style="color: {CIANO_CLARO}; margin: 10px 0 0 0; font-family: Inter, 'Segoe UI', Arial, sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">
+            Comparativo de fontes • Busca localizada • Sistema CFT/CRTs
         </p>
     </div>
 """, unsafe_allow_html=True)
@@ -264,7 +277,7 @@ area_selecionada = st.sidebar.radio(
 )
 
 st.sidebar.markdown("---")
-st.sidebar.caption("Desenvolvido com ❤️ por bikopv09")
+st.sidebar.caption("Search.CRT · BK Serviços, Produção & Comunicação")
 
 # AREA 1: COMPARATIVO DE DADOS
 if area_selecionada == "1. Comparativo de Dados":

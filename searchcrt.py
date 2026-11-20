@@ -8,17 +8,29 @@ import zipfile
 import tempfile
 import itertools
 import threading
+import sys
 
-# --- PALETA DE CORES (Versão Clean e Profissional) ---
-BG_COLOR = "#0A1D3A"       
-PANEL_BG = "#102F4D"       
-FG_COLOR = "#4DD0E1"       
-FG_TEXT = "#FFFFFF"        
-FG_ALT = "#82B1FF"         
-BTN_BG = "#133458"         
-BTN_ACTIVE = "#1C4E80"     
-WARN_COLOR = "#FF5252"     
-OK_COLOR = "#69F0AE"       
+# --- IDENTIDADE VISUAL Search.CRT (ver assets/identidade/README.md) ---
+BG_COLOR = "#0B2545"       # Azul Institucional (fundo)
+PANEL_BG = "#13315C"       # Azul Profundo (painéis)
+FG_COLOR = "#22B8CF"       # Ciano Busca (destaques, títulos, bordas)
+FG_TEXT = "#FFFFFF"        # Texto principal
+FG_ALT = "#8FD8E6"         # Ciano Claro (texto secundário)
+BTN_BG = "#1A3F70"         # Botão
+BTN_ACTIVE = "#1F4E8C"     # Azul Médio (botão ativo / seleção)
+WARN_COLOR = "#E5484D"     # Vermelho Alerta
+OK_COLOR = "#2BB673"       # Verde Confere
+OK_BG = "#0F3D2E"          # Fundo do botão de ação principal
+
+
+def caminho_recurso(relativo):
+    """Resolve arquivos da identidade tanto no .py quanto no .exe (PyInstaller)."""
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, relativo)
+
+
+ICONE_ICO = caminho_recurso(os.path.join("assets", "identidade", "searchcrt.ico"))
+ICONE_PNG = caminho_recurso(os.path.join("assets", "identidade", "icone-64.png"))
 FONT_HUD = ("Segoe UI", 10)
 FONT_HUD_B = ("Segoe UI", 10, "bold")
 FONT_TITLE = ("Segoe UI", 16, "bold")
@@ -42,13 +54,33 @@ class ProgressBarHUD(tk.Canvas):
 class SearchCRTApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("SearchCRT - Soluções em Dados")
-        self.root.geometry("600x400")
+        self.root.title("Search.CRT - Sistema CFT/CRTs")
+        self.root.geometry("600x430")
         self.root.configure(bg=BG_COLOR, padx=20, pady=20)
-        
+        try:
+            # default= aplica o ícone também às janelas filhas (Toplevel)
+            self.root.iconbitmap(default=ICONE_ICO)
+        except tk.TclError:
+            pass
+
         # --- Interface Principal ---
-        self.lbl_titulo = tk.Label(root, text="SearchCRT", font=FONT_TITLE, bg=BG_COLOR, fg=FG_COLOR)
-        self.lbl_titulo.pack(pady=(0, 30))
+        self.img_logo = None
+        try:
+            self.img_logo = tk.PhotoImage(file=ICONE_PNG)
+        except tk.TclError:
+            pass
+        frame_marca = tk.Frame(root, bg=BG_COLOR)
+        frame_marca.pack(pady=(0, 26))
+        if self.img_logo:
+            tk.Label(frame_marca, image=self.img_logo, bg=BG_COLOR).pack(side=tk.LEFT, padx=(0, 12))
+        frame_nome = tk.Frame(frame_marca, bg=BG_COLOR)
+        frame_nome.pack(side=tk.LEFT)
+        linha_nome = tk.Frame(frame_nome, bg=BG_COLOR)
+        linha_nome.pack(anchor="w")
+        self.lbl_titulo = tk.Label(linha_nome, text="Search", font=("Segoe UI", 22), bg=BG_COLOR, fg=FG_TEXT)
+        self.lbl_titulo.pack(side=tk.LEFT)
+        tk.Label(linha_nome, text=".CRT", font=("Segoe UI", 22, "bold"), bg=BG_COLOR, fg=FG_COLOR).pack(side=tk.LEFT)
+        tk.Label(frame_nome, text="SISTEMA CFT/CRTs", font=("Segoe UI", 8, "bold"), bg=BG_COLOR, fg=FG_ALT).pack(anchor="w")
         
         self.btn_comparativo = tk.Button(root, text="COMPARATIVO DE DADOS", command=self.abrir_comparativo, 
                                          width=40, height=3, font=FONT_HUD_B, bg=BTN_BG, fg=FG_TEXT, 
@@ -163,7 +195,7 @@ class SearchCRTApp:
         self.listbox_arquivos = tk.Listbox(self.win_comp, height=4, font=FONT_HUD, bg=PANEL_BG, fg=FG_TEXT, selectbackground=BTN_ACTIVE, relief=tk.FLAT, highlightthickness=1, highlightbackground=FG_COLOR)
         self.listbox_arquivos.pack(fill=tk.X, pady=5)
 
-        self.btn_processar_comp = tk.Button(self.win_comp, text="PROCESSAR DADOS", command=self.iniciar_processamento_thread, height=2, font=FONT_TITLE, bg="#0E4A35", fg=OK_COLOR, relief=tk.SOLID, bd=1)
+        self.btn_processar_comp = tk.Button(self.win_comp, text="PROCESSAR DADOS", command=self.iniciar_processamento_thread, height=2, font=FONT_TITLE, bg=OK_BG, fg=OK_COLOR, relief=tk.SOLID, bd=1)
         self.btn_processar_comp.pack(fill=tk.X, pady=10)
 
         # BLOCO DA BARRA DE PROGRESSO
@@ -409,7 +441,7 @@ class SearchCRTApp:
         chaves_export = [chave for var, chave in self.check_vars if var.get()]
         if not chaves_export: return
 
-        caminho_salvar = filedialog.asksaveasfilename(defaultextension=".zip", initialfile="Relatorio_SearchCRT.zip", filetypes=[("Arquivo Zipado", "*.zip")], parent=self.win_comp)
+        caminho_salvar = filedialog.asksaveasfilename(defaultextension=".zip", initialfile="Relatorio_Search.CRT.zip", filetypes=[("Arquivo Zipado", "*.zip")], parent=self.win_comp)
         if not caminho_salvar: return
 
         nome_base = os.path.splitext(os.path.basename(caminho_salvar))[0]
@@ -467,7 +499,7 @@ class SearchCRTApp:
         self.entry_busca = tk.Entry(frame_loc, width=35, font=FONT_HUD, bg="#FFFFFF", fg="#000000", insertbackground="#000000", bd=1)
         self.entry_busca.grid(row=1, column=1, padx=5, pady=5, sticky="w")
         
-        self.btn_buscar_loc = tk.Button(self.win_loc, text="SELECIONAR FONTE E BUSCAR", command=self.iniciar_busca_thread, height=2, font=FONT_HUD_B, bg="#0E4A35", fg=OK_COLOR, relief=tk.SOLID, bd=1)
+        self.btn_buscar_loc = tk.Button(self.win_loc, text="SELECIONAR FONTE E BUSCAR", command=self.iniciar_busca_thread, height=2, font=FONT_HUD_B, bg=OK_BG, fg=OK_COLOR, relief=tk.SOLID, bd=1)
         self.btn_buscar_loc.pack(fill=tk.X, pady=15)
         
         self.frame_loading_loc = tk.Frame(self.win_loc, bg=BG_COLOR)

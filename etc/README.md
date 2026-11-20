@@ -1,33 +1,10 @@
-# SearchCRT - Configuração de Desenvolvimento
+# etc/ · configuração local
 
-Este diretório contém arquivos de configuração para o desenvolvimento do SearchCRT.
+| Arquivo | O que é |
+|---|---|
+| `users.example.json` | Modelo vazio do cadastro de usuários do módulo de login (`auth_manager.py`) |
+| `users.json` | Cadastro real. **Não vai para o repositório** (está no `.gitignore`) |
 
-## Arquivos
+Para usar o login: copie `users.example.json` para `users.json` e crie os usuários pelo `auth_manager.create_user(...)`. Nenhuma senha padrão é distribuída com o projeto.
 
-- `users.json` - Banco de dados local de usuários com credenciais pré-configuradas
-
-## Credenciais Padrão
-
-**Usuário**: admin  
-**Senha**: admin123  
-**Função**: admin
-
-## Segurança
-
-⚠️ **IMPORTANTE**: 
-- Altere as credenciais padrão antes de usar em produção
-- Não compartilhe o arquivo `users.json` em repositórios públicos
-- Use variáveis de ambiente para senhas em produção
-
-## Como Alterar Senha
-
-```python
-from auth_manager import auth_manager
-
-# Criar novo usuário com senha
-auth_manager.create_user('novo_usuario', 'nova_senha', 'email@example.com', 'admin')
-
-# Listar usuários
-usuarios = auth_manager.list_users()
-print(usuarios)
-```
+> O módulo de login ainda não está ligado aos apps (ver Pendências no README principal).
