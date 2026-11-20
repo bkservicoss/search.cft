@@ -1,0 +1,8 @@
+{
+  "name": "Search.CRT",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
+  "postCreateCommand": "pip install -r requirements.txt pytest",
+  "forwardPorts": [8501],
+  "portsAttributes": { "8501": { "label": "Search.CRT (web)", "onAutoForward": "openBrowser" } },
+  "customizations": { "vscode": { "extensions": ["ms-python.python"] } }
+}

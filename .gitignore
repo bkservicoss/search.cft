@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Build do PyInstaller (o .exe é gerado pelo GitHub Actions)
+build/
+dist/
+*.exe
+
+# Configuração local e segredos
+.env
+etc/users.json
+etc/test_users.json
+
+# Dados processados — nunca versionar planilhas com dados pessoais
+exports/*
+!exports/README.md
+logs/*
+!logs/README.md
+tmp/
+*.xlsx
+*.xls
+*.csv
+*.ods

@@ -1,377 +1,146 @@
-# 🔍 SearchCRT - Sistema Profissional de Busca e Comparativo de Dados
+<p align="center"><img src="assets/identidade/logo-search-cft.svg" alt="Search.CFT" width="420"></p>
 
-[![Python Version](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)](https://github.com/bikopv09/search.crt)
+<p align="center"><b>Comparativo de fontes e busca localizada de dados cadastrais, criado para o CRT-ES e preparado para o Sistema CFT/CRTs.</b></p>
+<p align="center">Python · Tkinter (desktop Windows) · Streamlit (web) · pandas</p>
 
-**SearchCRT** é uma aplicação desktop profissional desenvolvida em Python com Tkinter, especializada em **busca avançada**, **comparação de dados** e **rastreamento de informações** em arquivos. Ideal para análise de grandes volumes de dados, identificação de duplicatas e cruzamento de informações entre múltiplas fontes.
-
----
-
-## 🌟 Principais Funcionalidades
-
-### 🔄 **Comparativo Avançado de Dados**
-Compare múltiplos arquivos simultaneamente e identifique padrões:
-- ✅ Suporte a XLSX, XLS, TXT e CSV
-- ✅ Extração inteligente de: **Nomes**, **CPF**, **Telefone**, **E-mail**
-- ✅ Validação automática de CPF (dígitos verificadores)
-- ✅ Normalização Unicode de texto
-- ✅ Limite customizável de fontes para ocorrência
-- ✅ Processamento multi-thread não-bloqueante
-- ✅ Barra de progresso em tempo real
-- ✅ Exportação em ZIP (TXT, CSV, XLSX)
-
-### 🎯 **Busca Localizada (Rastreio)**
-Localize registros específicos com precisão:
-- ✅ Busca por: Nome, CPF, Telefone, E-mail, Município
-- ✅ Varredura de múltiplas abas em planilhas
-- ✅ Processamento paralelo otimizado
-- ✅ Resultados instantâneos
-- ✅ Exportação de achados em TXT
-
-### 🔐 **Autenticação e Segurança**
-Sistema robusto de controle de acesso:
-- ✅ Login com criptografia SHA-256
-- ✅ Gerenciamento de usuários local
-- ✅ Sessões com timeout configurável
-- ✅ Roles (admin, user)
-- ✅ Logging completo de acessos
-
-### 📊 **Integração com Banco de Dados**
-Armazenamento persistente e recuperação de dados:
-- ✅ MongoDB integrado
-- ✅ Collections: searches, results, users
-- ✅ Histórico de buscas
-- ✅ Modo offline com fallback
-- ✅ Error handling robusto
-
-### ⚙️ **Configuração Centralizada**
-Controle total sobre a aplicação:
-- ✅ Arquivo `config.ini` único
-- ✅ Múltiplas seções organizadas
-- ✅ Valores com defaults inteligentes
-- ✅ Suporte a string, int, bool
-- ✅ Carregamento automático
+<p align="center">
+  <img src="https://img.shields.io/badge/status-em%20desenvolvimento-22B8CF?style=flat-square" alt="status">
+  <img src="https://img.shields.io/badge/vers%C3%A3o-0.9%20(piloto%20CRT--ES)-1F4E8C?style=flat-square" alt="versão">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-0B2545?style=flat-square&logo=python&logoColor=white" alt="python">
+  <img src="https://img.shields.io/badge/plataforma-Windows%20%7C%20Web-13315C?style=flat-square" alt="plataforma">
+  <img src="https://img.shields.io/badge/uso-privado-2BB673?style=flat-square" alt="uso privado">
+</p>
 
 ---
 
-## 📋 Requisitos
-
-### Sistema
-- **Python**: 3.8 ou superior
-- **RAM**: 2GB mínimo (4GB recomendado)
-- **Espaço em disco**: 500MB
-
-### Dependências
-```
-pandas>=1.3.0         # Processamento de dados
-openpyxl>=3.6.0       # Excel
-pymongo>=3.12.0       # MongoDB
-python-dateutil>=2.8.0 # Utilitários de data
-numpy>=1.20.0         # Computação numérica
-```
+## Sumário
+1. [Visão geral](#1-visão-geral)
+2. [Família Search.CFT e identidade visual](#2-família-searchcft-e-identidade-visual)
+3. [Estado do projeto](#3-estado-do-projeto)
+4. [Como usar (sem instalar nada)](#4-como-usar-sem-instalar-nada)
+5. [Configuração](#5-configuração)
+6. [Estrutura do repositório](#6-estrutura-do-repositório)
+7. [Segurança e LGPD](#7-segurança-e-lgpd)
+8. [Pendências](#8-pendências)
 
 ---
 
-## 🚀 Instalação Rápida
+## 1. Visão geral
+| Funcionalidade | O que faz |
+|---|---|
+| **Comparativo de Dados** | Cruza 2 ou mais arquivos e mostra quem aparece em pelo menos N fontes, por Nome, CPF, Telefone e/ou E-mail (combináveis). Exporta `.zip` com TXT, CSV e XLSX |
+| **Busca Localizada** | Procura um Nome, CPF, Telefone, E-mail ou Município em todas as abas de uma planilha e exporta as linhas encontradas |
+| **Normalização** | Remove acentos e símbolos de nomes, valida dígitos verificadores do CPF, padroniza telefone (tira +55 e zero do DDD) e e-mail em minúsculas |
 
-### 1. Clone o repositório
-```bash
-git clone https://github.com/bikopv09/search.crt.git
-cd search.crt
+| Versão | Arquivo | Situação |
+|---|---|---|
+| Desktop Windows | `searchcrt.py` (+ `searchcrt.spec`) | Funcional, em uso no piloto CRT-ES |
+| Web | `searchcrt_streamlit.py` | Funcional, sem login, com aba de histórico |
+
+## 2. Família Search.CFT e identidade visual
+| Nome | Uso |
+|---|---|
+| **Search.CFT** | Marca-mãe e este repositório (escopo nacional, Sistema CFT/CRTs) |
+| **Search.CRT** | O aplicativo instalado em cada regional |
+| **Search.CRT · ES** | Edição do piloto no CRT-ES |
+
+<p>
+  <img src="assets/identidade/logo-search-crt.svg" alt="Search.CRT" height="48">&nbsp;&nbsp;
+  <img src="assets/identidade/icone-app.svg" alt="ícone" height="48">
+</p>
+
+Símbolo: lupa com dois aros sobrepostos; a interseção em ciano é o registro encontrado em mais de uma fonte. Cores principais: Azul Institucional `#0B2545`, Ciano Busca `#22B8CF`, Verde Confere `#2BB673`. Manual completo, arquivos e regras de uso em [`assets/identidade/`](assets/identidade/README.md).
+
+## 3. Estado do projeto
+Panorama em 20/11/2026.
+
+| Área | Situação | Observação |
+|---|---|---|
+| Motor de comparação e busca | 🟢 Pronto | Regras de CPF, telefone, e-mail e nome funcionando nas duas versões |
+| App desktop | 🟢 Funcional | Identidade aplicada; 5 bugs corrigidos; build agora pelo GitHub Actions |
+| App web | 🟢 Funcional | Identidade aplicada; roda no Codespaces |
+| Identidade visual | 🟢 Pronto | Logos, ícone, paleta e manual em `assets/identidade/` |
+| Build do .exe | 🟡 Novo | Workflow criado; precisa da 1ª execução para confirmar |
+| Login (`auth_manager.py`) | 🟠 Não ligado | Existe, mas nenhum app usa; senha com SHA-256 sem sal |
+| Banco (`database_manager.py`) | 🟠 Não ligado | MongoDB previsto, nenhum app grava nada |
+| Configuração (`config.ini`) | 🟠 Não ligado | Os apps não leem o arquivo |
+| Testes | 🔴 Parcial | 6 de 9 passam; os 3 de login falham (usuário de teste não é apagado entre testes). O motor de busca não tem teste |
+| Multi-regional (CFT/CRTs) | ⚪ Não iniciado | Hoje é 1 instalação por máquina, sem separação por regional |
+
+**Bugs corrigidos no app desktop (20/11/2026)**
+| Bug | Correção |
+|---|---|
+| `.csv` aceito na seleção, mas ignorado no Comparativo | CSV lido de verdade (separador detectado sozinho); formato desconhecido agora gera aviso |
+| Erro na Busca Localizada não mostrava mensagem | Mensagem guardada antes de sair do `except` |
+| CPF em célula numérica do Excel perdia o zero à esquerda | Planilhas lidas como texto e CPF recomposto com 11 dígitos nas colunas "CPF" |
+| Em `.txt`, a linha inteira virava "nome" | Nome extraído do trecho com 2+ palavras sem números |
+| "Remover" tirava só o primeiro selecionado | Lista aceita seleção múltipla e remove todos |
+
+Busca Localizada também passou a aceitar `.csv` e `.ods`. Na versão web, o CPF com zero à esquerda e o nome em `.txt` ainda seguem o comportamento antigo.
+
+## 4. Como usar (sem instalar nada)
+| O quê | Caminho |
+|---|---|
+| Baixar o `.exe` | **Actions** → **Build Windows (.exe)** → **Run workflow** → baixar o artefato **Search.CRT-windows** |
+| Rodar a versão web | **Code** → **Codespaces** → **Create codespace on main** → no terminal: `streamlit run searchcrt_streamlit.py` |
+| Rodar os testes | No terminal do Codespace: `pytest tests/` |
+
+Detalhes em [INSTALL.md](INSTALL.md).
+
+## 5. Configuração
+| Item | Onde | Observação |
+|---|---|---|
+| Cores, ícone, logo | `assets/identidade/` | Os dois apps leem daqui |
+| Build do Windows | `searchcrt.spec` | Inclui o ícone e exclui bibliotecas que o app não usa |
+| Ambiente do Codespaces | `.devcontainer/devcontainer.json` | Python 3.12, instala `requirements.txt`, abre a porta 8501 |
+| Usuários do login | `etc/users.json` (fora do Git) | Modelo em `etc/users.example.json`; nenhuma senha padrão |
+| Parâmetros gerais | `config.ini` | Ainda não lido pelos apps |
+
+## 6. Estrutura do repositório
+```
+search.cft/
+├── CLAUDE.md                  # Instruções do projeto para o Claude
+├── searchcrt.py               # App desktop (Tkinter)
+├── searchcrt_streamlit.py     # App web (Streamlit)
+├── searchcrt.spec             # Build do .exe (PyInstaller)
+├── auth_manager.py            # Login local (não ligado)
+├── database_manager.py        # MongoDB (não ligado)
+├── config_manager.py          # Leitura do config.ini (não ligado)
+├── config.ini
+├── requirements.txt
+├── setup.py
+├── INSTALL.md
+├── assets/identidade/         # Logos, ícones, manual da marca
+├── tools/gerar_identidade.py  # Gera os arquivos da identidade
+├── etc/                       # users.example.json
+├── exports/ · logs/           # Saídas locais (fora do Git)
+├── tests/test_core.py
+├── .devcontainer/
+└── .github/workflows/build-windows.yml
 ```
 
-### 2. Crie ambiente virtual (recomendado)
-```bash
-# Windows
-python -m venv venv
-venv\Scripts\activate
-
-# Mac/Linux
-python3 -m venv venv
-source venv/bin/activate
-```
-
-### 3. Instale dependências
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Execute a aplicação
-```bash
-# Versão original
-python searchcrt.py
-
-# OU Versão integrada com autenticação e MongoDB
-python searchcrt_integrated.py
-```
-
----
-
-## 📖 Uso
-
-### Comparativo de Dados
-1. Clique em **"COMPARATIVO DE DADOS"**
-2. Selecione os campos: Nome, CPF, Telefone, E-mail
-3. Defina o mínimo de fontes necessárias
-4. Adicione arquivos para análise
-5. Clique em **"PROCESSAR DADOS"**
-6. Revise os resultados
-7. Exporte em ZIP
-
-### Busca Localizada
-1. Clique em **"BUSCA LOCALIZADA"**
-2. Selecione o tipo de dado
-3. Insira o termo a buscar
-4. Selecione a planilha
-5. Aguarde o resultado
-6. Exporte os achados
-
----
-
-## ⚙️ Configuração
-
-### Arquivo config.ini
-
-Customize em `config.ini`:
-
-```ini
-[Database]
-mongodb_host=localhost
-mongodb_port=27017
-database_name=searchcrt
-
-[UI]
-theme=dark
-window_width=600
-window_height=400
-
-[Features]
-enable_logging=True
-log_file=./logs/searchcrt.log
-log_level=INFO
-
-[Authentication]
-enable_auth=False
-session_timeout=3600
-```
-
-Veja [INSTALL.md](INSTALL.md) para configuração completa.
-
----
-
-## 🔐 Autenticação
-
-### Credenciais Padrão
-```
-Usuário: admin
-Senha: admin123
-```
-
-### Criar Novo Usuário
-```python
-from auth_manager import auth_manager
-
-auth_manager.create_user(
-    username='novo_usuario',
-    password='senha_segura',
-    email='usuario@example.com',
-    role='admin'
-)
-```
-
-### Ativar Autenticação
-Edite `config.ini`:
-```ini
-[Authentication]
-enable_auth=True
-```
-
----
-
-## 📊 Estrutura do Projeto
-
-```
-search.crt/
-├── 📄 searchcrt.py                # App original (33.7 KB)
-├── 📄 searchcrt_integrated.py       # App integrada com DB
-├── 📄 config_manager.py            # Gerenciador de config
-├── 📄 database_manager.py          # Gerenciador de DB
-├── 📄 auth_manager.py              # Gerenciador de auth
-├── ⚙️ config.ini                   # Configuração principal
-├── 📦 requirements.txt             # Dependências
-├── 📦 setup.py                     # Setup para distribuição
-├── 📚 README.md                    # Este arquivo
-├── 📚 INSTALL.md                   # Guia de instalação
-├── 📚 CONFIGURATION_REPORT.md      # Relatório de configuração
-├── 📁 etc/                         # Configurações
-│   ├── users.json                  # Banco de usuários
-│   └── README.md                   # Documentação
-├── 📁 logs/                        # Logs da aplicação
-│   └── searchcrt.log               # Log principal
-├── 📁 exports/                     # Exportações geradas
-└── 📁 tests/                       # Testes unitários
-    └── test_core.py                # Testes
-```
-
----
-
-## 📝 Logs
-
-Todos os eventos são registrados em `./logs/searchcrt.log`:
-
-```
-2026-07-01 20:30:45 - searchcrt - INFO - Connected to MongoDB successfully
-2026-07-01 20:31:12 - searchcrt - INFO - User 'admin' authenticated successfully
-2026-07-01 20:32:08 - searchcrt - INFO - Search record inserted: 507f1f77bcf86cd799439011
-```
-
-Configure em `config.ini`:
-```ini
-[Features]
-enable_logging=True
-log_file=./logs/searchcrt.log
-log_level=INFO
-max_log_size=100MB
-```
-
----
-
-## 🧪 Testes
-
-Execute testes unitários:
-
-```bash
-# Instalar pytest
-pip install pytest pytest-cov
-
-# Rodar testes
-pytest tests/
-
-# Com cobertura
-pytest --cov=. tests/
-```
-
----
-
-## 🔒 Segurança
-
-- ✅ Senhas criptografadas com SHA-256
-- ✅ Validação de entrada de dados
-- ✅ Sessões com timeout
-- ✅ Logging detalhado de operações
-- ✅ Modo offline seguro
-- ✅ Proteção de arquivos sensíveis
-
----
-
-## 📈 Performance
-
-- **Threading**: Operações não-bloqueantes
-- **Cache**: Configurável para otimização
-- **Limite de Resultados**: 500 registros por padrão
-- **Max Workers**: 4 threads simultâneas
-- **Chunk Processing**: Suporta arquivos grandes
-
-Configure em `config.ini`:
-```ini
-[Performance]
-max_workers=4
-cache_enabled=True
-cache_ttl=3600
-result_limit=500
-```
-
----
-
-## 🐛 Troubleshooting
-
-### Erro: "MongoDB Connection Failed"
-```bash
-# Inicie MongoDB
-mongod --dbpath /data/db
-
-# Ou use modo offline (deixar config.ini vazio)
-```
-
-### Interface Lenta
-```ini
-[Performance]
-max_workers=2
-cache_ttl=1800
-result_limit=250
-```
-
-### Erro: "Configuration file not found"
-```bash
-# Verifique se config.ini existe
-ls config.ini
-# Se não, crie do template
-cp config.ini.example config.ini
-```
-
----
-
-## 🤝 Contribuição
-
-Contribuições são bem-vindas! Por favor:
-
-1. Fork o projeto
-2. Crie uma branch (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add AmazingFeature'`)
-4. Push (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
----
-
-## 📄 Licença
-
-Este projeto está sob a **Licença MIT**. Veja [LICENSE](LICENSE) para detalhes.
-
----
-
-## 👨‍💻 Autor
-
-**bikopv09** - Desenvolvedor principal
-
-- GitHub: [@bikopv09](https://github.com/bikopv09)
-- Email: bkservicoss@gmail.com
-
----
-
-## 📞 Suporte
-
-- **Issues**: [GitHub Issues](https://github.com/bikopv09/search.crt/issues)
-- **Email**: bkservicoss@gmail.com
-- **Documentação**: [INSTALL.md](INSTALL.md)
-
----
-
-## 🙏 Agradecimentos
-
-- Comunidade Python
-- Pandas development team
-- MongoDB community
-- Tkinter documentation
-
----
-
-## 📊 Status
-
-| Aspecto | Status |
-|---------|--------|
-| **Core** | ✅ Production Ready |
-| **Testes** | ✅ Unit Tests |
-| **Documentação** | ✅ Completa |
-| **Segurança** | ✅ Implementada |
-| **Performance** | ✅ Otimizada |
-
----
-
-**Versão**: 1.0.0  
-**Última Atualização**: 2026-07-01  
-**Status**: 🚀 **Pronto para Produção**
-
----
-
-> 💡 **Dica**: Para configuração completa, consulte [INSTALL.md](INSTALL.md) e [CONFIGURATION_REPORT.md](CONFIGURATION_REPORT.md)
+## 7. Segurança e LGPD
+O app trata **dados pessoais** (nome, CPF, telefone, e-mail) de profissionais registrados em autarquia federal, então a LGPD se aplica.
+
+| Regra | Situação |
+|---|---|
+| Nenhuma planilha, exportação ou log vai para o Git | ✅ `.gitignore` bloqueia `.xlsx`, `.xls`, `.csv`, `.ods`, `exports/`, `logs/` |
+| Nenhuma senha ou usuário padrão no repositório | ✅ `etc/users.json` removido do Git; senhas antigas citadas na documentação foram retiradas |
+| Segredos (Mongo, chaves) em GitHub Secrets ou variável de ambiente | ✅ Regra adotada; `config.ini` não deve receber senha |
+| Repositório privado | ⚠️ O repositório ainda está **público** |
+| Senhas com hash forte (bcrypt/argon2) | ⚠️ Pendente, se o login for ligado |
+| Processamento só local (nada sai da máquina) | ✅ No desktop; na versão web, depende de onde for hospedada |
+
+## 8. Pendências
+- [ ] Tornar o repositório privado (Settings → General → Danger Zone → Change visibility)
+- [ ] Conferir o histórico do Git, que ainda guarda o antigo `etc/users.json` (senha padrão fraca, sem dado real)
+- [ ] Rodar o workflow **Build Windows (.exe)** pela primeira vez e testar o `.exe` no CRT-ES
+- [x] Corrigir os 5 bugs do app desktop
+- [ ] Levar as mesmas correções (CPF como texto, nome em TXT) para a versão web
+- [ ] Corrigir os testes de login e criar testes do motor (CPF, telefone, e-mail, comparativo)
+- [ ] Juntar o motor num módulo único (`motor.py`) usado pelas duas versões, em vez de código duplicado
+- [ ] Decidir se login, banco e `config.ini` entram no produto ou saem do repositório
+- [ ] Definir o modelo para o Sistema CFT/CRTs: 1 instalação por regional ou versão web central com separação por CRT
+- [ ] Validar com a comunicação do CFT/CRT-ES a convivência da marca Search.CRT com as marcas oficiais
+
+<p align="center"><sub>Projeto privado · BK Serviços, Produção &amp; Comunicação</sub></p>

@@ -8,17 +8,29 @@ import zipfile
 import tempfile
 import itertools
 import threading
+import sys
 
-# --- PALETA DE CORES (Versão Clean e Profissional) ---
-BG_COLOR = "#0A1D3A"       
-PANEL_BG = "#102F4D"       
-FG_COLOR = "#4DD0E1"       
-FG_TEXT = "#FFFFFF"        
-FG_ALT = "#82B1FF"         
-BTN_BG = "#133458"         
-BTN_ACTIVE = "#1C4E80"     
-WARN_COLOR = "#FF5252"     
-OK_COLOR = "#69F0AE"       
+# --- IDENTIDADE VISUAL Search.CRT (ver assets/identidade/README.md) ---
+BG_COLOR = "#0B2545"       # Azul Institucional (fundo)
+PANEL_BG = "#13315C"       # Azul Profundo (painéis)
+FG_COLOR = "#22B8CF"       # Ciano Busca (destaques, títulos, bordas)
+FG_TEXT = "#FFFFFF"        # Texto principal
+FG_ALT = "#8FD8E6"         # Ciano Claro (texto secundário)
+BTN_BG = "#1A3F70"         # Botão
+BTN_ACTIVE = "#1F4E8C"     # Azul Médio (botão ativo / seleção)
+WARN_COLOR = "#FF8A8E"     # Vermelho Alerta (versão para fundo escuro, contraste AA)
+OK_COLOR = "#2BB673"       # Verde Confere
+OK_BG = "#0F3D2E"          # Fundo do botão de ação principal
+
+
+def caminho_recurso(relativo):
+    """Resolve arquivos da identidade tanto no .py quanto no .exe (PyInstaller)."""
+    base = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, relativo)
+
+
+ICONE_ICO = caminho_recurso(os.path.join("assets", "identidade", "searchcrt.ico"))
+ICONE_PNG = caminho_recurso(os.path.join("assets", "identidade", "icone-64.png"))
 FONT_HUD = ("Segoe UI", 10)
 FONT_HUD_B = ("Segoe UI", 10, "bold")
 FONT_TITLE = ("Segoe UI", 16, "bold")
@@ -42,13 +54,33 @@ class ProgressBarHUD(tk.Canvas):
 class SearchCRTApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("SearchCRT - Soluções em Dados")
-        self.root.geometry("600x400")
+        self.root.title("Search.CRT - Sistema CFT/CRTs")
+        self.root.geometry("600x430")
         self.root.configure(bg=BG_COLOR, padx=20, pady=20)
-        
+        try:
+            # default= aplica o ícone também às janelas filhas (Toplevel)
+            self.root.iconbitmap(default=ICONE_ICO)
+        except tk.TclError:
+            pass
+
         # --- Interface Principal ---
-        self.lbl_titulo = tk.Label(root, text="SearchCRT", font=FONT_TITLE, bg=BG_COLOR, fg=FG_COLOR)
-        self.lbl_titulo.pack(pady=(0, 30))
+        self.img_logo = None
+        try:
+            self.img_logo = tk.PhotoImage(file=ICONE_PNG)
+        except tk.TclError:
+            pass
+        frame_marca = tk.Frame(root, bg=BG_COLOR)
+        frame_marca.pack(pady=(0, 26))
+        if self.img_logo:
+            tk.Label(frame_marca, image=self.img_logo, bg=BG_COLOR).pack(side=tk.LEFT, padx=(0, 12))
+        frame_nome = tk.Frame(frame_marca, bg=BG_COLOR)
+        frame_nome.pack(side=tk.LEFT)
+        linha_nome = tk.Frame(frame_nome, bg=BG_COLOR)
+        linha_nome.pack(anchor="w")
+        self.lbl_titulo = tk.Label(linha_nome, text="Search", font=("Segoe UI", 22), bg=BG_COLOR, fg=FG_TEXT)
+        self.lbl_titulo.pack(side=tk.LEFT)
+        tk.Label(linha_nome, text=".CRT", font=("Segoe UI", 22, "bold"), bg=BG_COLOR, fg=FG_COLOR).pack(side=tk.LEFT)
+        tk.Label(frame_nome, text="SISTEMA CFT/CRTs", font=("Segoe UI", 8, "bold"), bg=BG_COLOR, fg=FG_ALT).pack(anchor="w")
         
         self.btn_comparativo = tk.Button(root, text="COMPARATIVO DE DADOS", command=self.abrir_comparativo, 
                                          width=40, height=3, font=FONT_HUD_B, bg=BTN_BG, fg=FG_TEXT, 
@@ -78,6 +110,49 @@ class SearchCRTApp:
         limpo = re.sub(r'[^a-zA-Z\s]', '', u"".join([c for c in nfkd if not unicodedata.combining(c)]))
         limpo = " ".join(limpo.split()).upper()
         return [limpo] if len(limpo) > 2 else []
+
+    def extrair_nome_de_linha(self, linha):
+        """Em TXT, pega o trecho que parece nome (2+ palavras), não a linha inteira."""
+        sem_email = re.sub(r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}', ' ', str(linha))
+        for campo in re.split(r'[;|\t,]', sem_email):
+            if re.search(r'\d', campo):
+                continue
+            nomes = self.extrair_nomes(campo)
+            if nomes and len(nomes[0].split()) >= 2:
+                return nomes
+        nomes = self.extrair_nomes(sem_email)
+        return nomes if nomes and len(nomes[0].split()) >= 2 else []
+
+    def ler_tabelas(self, caminho):
+        """Lê planilha (.xlsx/.xls/.ods) ou .csv como texto e devolve [(aba, DataFrame)].
+        Tudo como texto (dtype=str) para não transformar CPF/telefone em número."""
+        ext = os.path.splitext(caminho)[1].lower()
+        if ext == '.csv':
+            df = pd.read_csv(caminho, sep=None, engine='python', dtype=str, encoding='utf-8-sig',
+                             encoding_errors='ignore', keep_default_na=False)
+            tabelas = [('CSV', df)]
+        else:
+            xls = pd.ExcelFile(caminho)
+            tabelas = [(aba, pd.read_excel(xls, sheet_name=aba, dtype=str, keep_default_na=False))
+                       for aba in xls.sheet_names]
+        saida = []
+        for aba, df in tabelas:
+            df = df.replace(r'^\s*$', float('nan'), regex=True).dropna(how='all').fillna('')
+            # CPF salvo como número no Excel perde o zero à esquerda: recompõe nas colunas de CPF
+            for col in df.columns:
+                if 'cpf' in str(col).lower():
+                    df[col] = df[col].map(self._recompor_cpf)
+            saida.append((aba, df))
+        return saida
+
+    @staticmethod
+    def _recompor_cpf(valor):
+        v = str(valor).strip()
+        if v.endswith('.0'):
+            v = v[:-2]
+        if v.isdigit() and 8 <= len(v) < 11:
+            return v.zfill(11)
+        return v
 
     def is_cpf_valido(self, cpf):
         if len(cpf) != 11 or cpf == cpf[0] * 11: return False
@@ -160,10 +235,10 @@ class SearchCRTApp:
         self.btn_rem_arquivo = tk.Button(frame_add, text="Remover", command=self.remover_arquivo_comp, font=FONT_HUD_B, bg=BTN_BG, fg=WARN_COLOR, relief=tk.SOLID, bd=1)
         self.btn_rem_arquivo.pack(side=tk.LEFT, padx=2)
         
-        self.listbox_arquivos = tk.Listbox(self.win_comp, height=4, font=FONT_HUD, bg=PANEL_BG, fg=FG_TEXT, selectbackground=BTN_ACTIVE, relief=tk.FLAT, highlightthickness=1, highlightbackground=FG_COLOR)
+        self.listbox_arquivos = tk.Listbox(self.win_comp, height=4, selectmode=tk.EXTENDED, font=FONT_HUD, bg=PANEL_BG, fg=FG_TEXT, selectbackground=BTN_ACTIVE, relief=tk.FLAT, highlightthickness=1, highlightbackground=FG_COLOR)
         self.listbox_arquivos.pack(fill=tk.X, pady=5)
 
-        self.btn_processar_comp = tk.Button(self.win_comp, text="PROCESSAR DADOS", command=self.iniciar_processamento_thread, height=2, font=FONT_TITLE, bg="#0E4A35", fg=OK_COLOR, relief=tk.SOLID, bd=1)
+        self.btn_processar_comp = tk.Button(self.win_comp, text="PROCESSAR DADOS", command=self.iniciar_processamento_thread, height=2, font=FONT_TITLE, bg=OK_BG, fg=OK_COLOR, relief=tk.SOLID, bd=1)
         self.btn_processar_comp.pack(fill=tk.X, pady=10)
 
         # BLOCO DA BARRA DE PROGRESSO
@@ -219,7 +294,8 @@ class SearchCRTApp:
     def remover_arquivo_comp(self):
         selecionados = self.listbox_arquivos.curselection()
         if not selecionados: return
-        del self.arquivos_comp[selecionados[0]]
+        for indice in sorted(selecionados, reverse=True):
+            del self.arquivos_comp[indice]
         self.atualizar_listbox()
         self.atualizar_limites()
 
@@ -277,7 +353,7 @@ class SearchCRTApp:
                         for linha in f:
                             linha_str = str(linha).strip()
                             if not linha_str: continue
-                            nomes = self.extrair_nomes(linha_str) if "Nome" in selecionados else []
+                            nomes = self.extrair_nome_de_linha(linha_str) if "Nome" in selecionados else []
                             cpfs = self.extrair_cpfs_validos(linha_str) if "CPF" in selecionados else []
                             tels = self.extrair_telefones(linha_str) if "Telefone" in selecionados else []
                             emails = self.extrair_emails(linha_str) if "E-mail" in selecionados else []
@@ -295,12 +371,8 @@ class SearchCRTApp:
                                     self.linhas_vistas.add(assinatura_linha)
                                     self.dicionario_originais[chave].append({'Arquivo': nome_arquivo, 'Aba': 'N/A', 'Dados': linha_comp})
 
-                elif ext in ['.xlsx', '.xls']:
-                    xls = pd.ExcelFile(caminho)
-                    for aba in xls.sheet_names:
-                        df = pd.read_excel(xls, sheet_name=aba)
-                        df.dropna(how='all', inplace=True)
-                        
+                elif ext in ['.xlsx', '.xls', '.csv']:
+                    for aba, df in self.ler_tabelas(caminho):
                         colunas_nome = [i for i, col in enumerate(df.columns) if any(p in str(col).lower() for p in ['nome', 'titular', 'cliente', 'razao', 'paciente'])]
                         
                         df_str = df.astype(str)
@@ -309,7 +381,7 @@ class SearchCRTApp:
                             valid_vals = [(df.columns[i], v) for i, v in enumerate(val_strs) if v and v != 'nan']
                             
                             if not valid_vals: continue
-                            
+
                             linha_completa_texto = " ".join([v for _, v in valid_vals])
                             valores_colunas = [f"{c}: {v}" for c, v in valid_vals]
                             
@@ -337,6 +409,9 @@ class SearchCRTApp:
                                 if assinatura_linha not in self.linhas_vistas:
                                     self.linhas_vistas.add(assinatura_linha)
                                     self.dicionario_originais[chave].append({'Arquivo': nome_arquivo, 'Aba': aba, 'Dados': linha_comp})
+
+                else:
+                    raise ValueError(f"Formato não suportado: {nome_arquivo}")
 
             self.root.after(0, self.progress_bar.update_progress, 99, "Organizando Resultados...")
             chaves_validadas = [chave for chave, indices in mapa_arquivos_encontrados.items() if len(indices) >= minimo_exigido]
@@ -409,7 +484,7 @@ class SearchCRTApp:
         chaves_export = [chave for var, chave in self.check_vars if var.get()]
         if not chaves_export: return
 
-        caminho_salvar = filedialog.asksaveasfilename(defaultextension=".zip", initialfile="Relatorio_SearchCRT.zip", filetypes=[("Arquivo Zipado", "*.zip")], parent=self.win_comp)
+        caminho_salvar = filedialog.asksaveasfilename(defaultextension=".zip", initialfile="Relatorio_Search.CRT.zip", filetypes=[("Arquivo Zipado", "*.zip")], parent=self.win_comp)
         if not caminho_salvar: return
 
         nome_base = os.path.splitext(os.path.basename(caminho_salvar))[0]
@@ -467,7 +542,7 @@ class SearchCRTApp:
         self.entry_busca = tk.Entry(frame_loc, width=35, font=FONT_HUD, bg="#FFFFFF", fg="#000000", insertbackground="#000000", bd=1)
         self.entry_busca.grid(row=1, column=1, padx=5, pady=5, sticky="w")
         
-        self.btn_buscar_loc = tk.Button(self.win_loc, text="SELECIONAR FONTE E BUSCAR", command=self.iniciar_busca_thread, height=2, font=FONT_HUD_B, bg="#0E4A35", fg=OK_COLOR, relief=tk.SOLID, bd=1)
+        self.btn_buscar_loc = tk.Button(self.win_loc, text="SELECIONAR FONTE E BUSCAR", command=self.iniciar_busca_thread, height=2, font=FONT_HUD_B, bg=OK_BG, fg=OK_COLOR, relief=tk.SOLID, bd=1)
         self.btn_buscar_loc.pack(fill=tk.X, pady=15)
         
         self.frame_loading_loc = tk.Frame(self.win_loc, bg=BG_COLOR)
@@ -489,7 +564,7 @@ class SearchCRTApp:
         elif cat == "E-mail" and not self.extrair_emails(termo): messagebox.showwarning("Erro", "E-mail Inválido.", parent=self.win_loc); return
         elif cat in ["Nome", "Município"] and not self.extrair_nomes(termo): messagebox.showwarning("Erro", "Termo Inválido.", parent=self.win_loc); return
             
-        caminho_arquivo = filedialog.askopenfilename(title="Selecione a planilha", filetypes=[("Planilhas", "*.xlsx *.xls *.odf *.ods")], parent=self.win_loc)
+        caminho_arquivo = filedialog.askopenfilename(title="Selecione a planilha", filetypes=[("Planilhas e CSV", "*.xlsx *.xls *.ods *.csv")], parent=self.win_loc)
         if not caminho_arquivo: return
         
         self.txt_relatorio_loc.config(state=tk.NORMAL)
@@ -512,20 +587,18 @@ class SearchCRTApp:
         linhas_encontradas = set()
         try:
             self.root.after(0, self.progress_bar_loc.update_progress, 10, "Lendo Arquivo...")
-            xls = pd.ExcelFile(caminho_arquivo)
-            total_abas = len(xls.sheet_names)
-            
-            for i, aba in enumerate(xls.sheet_names):
+            tabelas = self.ler_tabelas(caminho_arquivo)
+            total_abas = len(tabelas)
+
+            for i, (aba, df) in enumerate(tabelas):
                 self.root.after(0, self.progress_bar_loc.update_progress, ((i+1)/total_abas)*90, f"Varrendo Aba {i+1}/{total_abas}")
-                df = pd.read_excel(xls, sheet_name=aba)
-                df.dropna(how='all', inplace=True)
                 df_str = df.astype(str)
                 
                 for row in df_str.itertuples(index=False, name=None):
                     match_encontrado = False
                     for val in row:
                         val_str = str(val).strip() 
-                        if val_str == 'nan': continue
+                        if not val_str or val_str == 'nan': continue
                         if categoria == "Município" and termo_busca in self.extrair_nomes(val_str): match_encontrado = True; break
                         elif categoria == "Nome" and termo_busca in self.extrair_nomes(val_str): match_encontrado = True; break
                         elif categoria == "CPF" and termo_busca in self.extrair_cpfs_validos(val_str): match_encontrado = True; break
@@ -533,12 +606,14 @@ class SearchCRTApp:
                         elif categoria == "E-mail" and termo_busca in self.extrair_emails(val_str): match_encontrado = True; break
                     
                     if match_encontrado:
-                        valores_linha = [f"{df.columns[idx]}: {v}" for idx, v in enumerate(row) if str(v).strip() != 'nan']
+                        valores_linha = [f"{df.columns[idx]}: {v}" for idx, v in enumerate(row) if str(v).strip() not in ('', 'nan')]
                         linhas_encontradas.add(f"[{aba}] " + " | ".join(valores_linha))
             
             self.root.after(0, self._renderizar_busca, termo_busca, list(linhas_encontradas))
         except Exception as e:
-            self.root.after(0, lambda: messagebox.showerror("Erro", str(e), parent=self.win_loc))
+            # Guarda a mensagem agora: a variável "e" deixa de existir ao sair do except
+            msg_erro = str(e)
+            self.root.after(0, lambda: messagebox.showerror("Erro", msg_erro, parent=self.win_loc))
             self.root.after(0, self.frame_loading_loc.pack_forget)
             self.root.after(0, lambda: self.btn_buscar_loc.config(state=tk.NORMAL))
 
